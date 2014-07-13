@@ -1,11 +1,30 @@
 package com.example.config;
 
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.Filter;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+
+    /**
+     * Overriding createServletApplicationContext() to include setting active profile.
+     */
+    @Override
+    protected WebApplicationContext createServletApplicationContext() {
+        AnnotationConfigWebApplicationContext servletAppContext = new AnnotationConfigWebApplicationContext();
+        servletAppContext.getEnvironment().setActiveProfiles("preprod");
+        Class<?>[] configClasses = getServletConfigClasses();
+        if (!ObjectUtils.isEmpty(configClasses)) {
+            servletAppContext.register(configClasses);
+        }
+        return servletAppContext;
+    }
 
     @Override
     protected String[] getServletMappings() {
